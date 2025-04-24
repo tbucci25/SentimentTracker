@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import gspread
-from gspread_dataframe import get_as_dataframe
 
 # Sheet setup
 SHEET_ID = "1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY"  # Replace with your actual Google Sheet ID
@@ -11,10 +10,11 @@ SHEET_NAME = "Sheet1"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    gc = gspread.public()  # Using the gspread public access helper from community plugin  # For public sheet access without authentication  # Assumes public sheet access
+    gc = gspread.public()  # Using the gspread public access helper from community plugin
     sh = gc.open_by_key(SHEET_ID)
     worksheet = sh.worksheet(SHEET_NAME)
-    df = get_as_dataframe(worksheet).dropna(how="all")
+    records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
+    df = pd.DataFrame(records)  # Convert to a Pandas DataFrame
     df['Date'] = pd.to_datetime(df['Date'])
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
     return df
