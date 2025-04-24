@@ -63,6 +63,9 @@ filtered = data[
     data['Quarter'].isin(quarter_filter)
 ]
 
+# Adjust the dates to be one calendar quarter behind
+filtered['Date'] = filtered['Date'] - pd.offsets.QuarterEnd(1)
+
 # Table view
 st.subheader("📋 Sentiment Table")
 st.dataframe(filtered.sort_values(by="Date", ascending=False))
