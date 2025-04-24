@@ -1,27 +1,15 @@
-# Streamlit dashboard for multi-sector industry sentiment from Google Sheet with quarterly sentiment view
+# Streamlit dashboard for multi-sector industry sentiment from Excel file with quarterly sentiment view
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import gspread
-import re  # Added for extracting the sheet ID from the URL
-from gspread import Client
-from gspread.auth import default
 
 # Sheet setup
-SHEET_LINK = "https://docs.google.com/spreadsheets/d/1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY/edit#gid=0"  # Replace with your actual Google Sheet ID
-SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
+FILE_PATH = "sentiment_data.xlsx"  # Replace with the actual file path
 
-# Connect and load data from Google Sheet
+# Connect and load data from Excel file
 def load_sheet_data():
-    # Authenticate with gspread using default credentials for public sheets
-    gc = Client(auth=default())
-    gc.session = None  # Disable session for public access
-
-    # Access the Google Sheet using its public URL
-    sh = gc.open_by_url(SHEET_LINK)
-    worksheet = sh.worksheet(SHEET_NAME)
-    records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
-    df = pd.DataFrame(records)  # Convert to a Pandas DataFrame
+    # Load data from an Excel file
+    df = pd.read_excel(FILE_PATH)
     df['Date'] = pd.to_datetime(df['Date'])
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
@@ -42,7 +30,7 @@ st.markdown("This dashboard visualizes industry sentiment across sectors, based 
 try:
     data = load_sheet_data()
 except Exception as e:
-    st.error(f"Error loading Google Sheet data: {e}")
+    st.error(f"Error loading data: {e}")
     st.stop()
 
 # Apply sentiment scoring
