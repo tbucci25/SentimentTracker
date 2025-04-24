@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import gspread
 import re  # Added for extracting the sheet ID from the URL
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Sheet setup
 SHEET_LINK = "https://docs.google.com/spreadsheets/d/1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY/edit#gid=0"  # Replace with your actual Google Sheet ID
@@ -11,8 +12,12 @@ SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    # Authenticate with gspread using default credentials
-    gc = gspread.Client()  # Initialize the gspread client
+    # Define the scope for accessing Google Sheets
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+    # Authenticate with gspread using default credentials for public sheets
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scope)
+    gc = gspread.authorize(credentials)
 
     # Access the Google Sheet using its public URL
     sh = gc.open_by_url(SHEET_LINK)
