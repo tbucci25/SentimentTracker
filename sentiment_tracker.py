@@ -66,11 +66,22 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 
-# Create the Altair heatmap
+# Map scores to their descriptors for the heatmap legend
+heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
+    -2: "Bearish",
+    -1.5: "Inflection to Bearish",
+    -1: "Neutral - Cautious Outlook",
+     0: "Neutral",
+     1: "Neutral - Bullish Outlook",
+     1.5: "Inflection to Bullish",
+     2: "Bullish"
+})
+
+# Update the Altair heatmap to use sentiment descriptors for the color encoding
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
+    color=alt.Color('Sentiment Descriptor:N', scale=alt.Scale(scheme='redyellowgreen'), title='Sentiment')
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
