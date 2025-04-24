@@ -15,7 +15,8 @@ SENTIMENT_SCORE = {
     "Neutral": 0,
     "Neutral - Bullish Outlook": 1,
     "Inflection to Bullish": 1.5,
-    "Bullish": 2
+        "Bullish": 2,
+    }
 
 # Load data function
 def load_sheet_data():
