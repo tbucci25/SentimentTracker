@@ -2,23 +2,12 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import os
 
 # Sheet setup
 FILE_PATH = "./Sentiment Tracker.xlsx"
-SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
+SHEET_NAME = "Sentiment Tracker"
 
-# Connect and load data from Excel file
-def load_sheet_data():
-    # Load data from an Excel file
-    df = pd.read_excel(FILE_PATH)
-    df['Score'] = df['Sentiment'].map(SENTIMENT_SCORE)
-    df = df.dropna(subset=['Score', 'Date', 'Sector', 'Sentiment'])  # Exclude rows with null values
-    df['Date'] = df['Date'] - pd.offsets.QuarterEnd(1)  # Adjust dates to the previous quarter
-    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
-    return df
-  
-# Update the sentiment scoring map to the specified levels
+# Sentiment scoring map
 SENTIMENT_SCORE = {
     "Bearish": -2,
     "Inflection to Bearish": -1.5,
@@ -29,9 +18,18 @@ SENTIMENT_SCORE = {
     "Bullish": 2
 }
 
+# Load data function
+def load_sheet_data():
+    df = pd.read_excel(FILE_PATH)
+    df['Score'] = df['Sentiment'].map(SENTIMENT_SCORE)
+    df = df.dropna(subset=['Score', 'Date', 'Sector', 'Sentiment'])
+    df['Date'] = df['Date'] - pd.offsets.QuarterEnd(1)
+    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
+    return df
+
 # Load data
-st.title("📊 Quarterly Sector Sentiment Tracker")
-st.markdown("This dashboard visualizes industry sentiment across sectors based on our conversations with indsutry experts.")
+st.title("\U0001F4CA Quarterly Sector Sentiment Tracker")
+st.markdown("This dashboard visualizes industry sentiment across sectors based on our conversations with industry experts.")
 
 try:
     data = load_sheet_data()
@@ -40,46 +38,25 @@ except Exception as e:
     st.stop()
 
 # Filters
-sector_filter = st.multiselect(
-    "Select sector(s):", 
-    sorted(data['Sector'].dropna().unique()),  # Dynamically fetch unique sectors from the data
-    default=sorted(data['Sector'].dropna().unique())  # Set default to all available sectors
-)
+sector_filter = st.multiselect("Select sector(s):", sorted(data['Sector'].dropna().unique()), default=sorted(data['Sector'].dropna().unique()))
 quarter_filter = st.multiselect("Select quarter(s):", sorted(data['Quarter'].unique()), default=sorted(data['Quarter'].unique()))
 
-filtered = data[
-    data['Sector'].isin(sector_filter) &
-    data['Quarter'].isin(quarter_filter)
-]
+filtered = data[data['Sector'].isin(sector_filter) & data['Quarter'].isin(quarter_filter)]
 
 # Table view
-st.subheader("📋 Sentiment Table")
+st.subheader("\U0001F4CB Sentiment Table")
 st.dataframe(filtered.sort_values(by="Date", ascending=False))
 
-# Heatmap view using Altair
-st.subheader("📈 Sentiment Score by Quarter & Sector")
+# Heatmap view
+st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
-
-# Ensure all scores are mapped and exclude null values
 heatmap_data = heatmap_data.dropna(subset=['Score'])
-heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
-    -2: "Bearish",
-    -1.5: "Inflection to Bearish",
-    -1: "Neutral - Cautious Outlook",
-     0: "Neutral",
-     1: "Neutral - Bullish Outlook",
-     1.5: "Inflection to Bullish",
-     2: "Bullish"
-})
 
-# Ensure there is no null data in the heatmap by filtering out rows with null values
-heatmap_data = heatmap_data.dropna(subset=['Score', 'Sector', 'Quarter'])
-
-# Rebuild the Altair heatmap to its original state
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
+    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Avg Sentiment'),
+    tooltip=['Quarter', 'Sector', 'Score']
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
@@ -88,9 +65,31 @@ heatmap = alt.Chart(heatmap_data).mark_rect().encode(
 
 st.altair_chart(heatmap, use_container_width=True)
 
-# Optional: Quotes or notes column display
+# Line chart: sentiment trend over time by sector
+trend_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
+line_chart = alt.Chart(trend_data).mark_line(point=True).encode(
+    x=alt.X('Quarter:O', title='Quarter'),
+    y=alt.Y('Score:Q', title='Avg Sentiment Score', scale=alt.Scale(domain=[-2, 2])),
+    color='Sector:N',
+    tooltip=['Quarter', 'Sector', 'Score']
+).properties(
+    title="Sentiment Trends by Sector",
+    width=700,
+    height=400
+)
+
+st.altair_chart(line_chart, use_container_width=True)
+
+# QoQ sentiment change table
+qoq = trend_data.pivot(index='Sector', columns='Quarter', values='Score')
+qoq_change = qoq.diff(axis=1).iloc[:, 1:]
+
+st.subheader("\U0001F4C9 Quarter-over-Quarter Sentiment Change")
+st.dataframe(qoq_change.style.format("{:+.2f}").background_gradient(cmap="RdYlGn", axis=1))
+
+# Optional: Notes display
 if 'Notes' in data.columns:
-    st.subheader("🗣 Notes")
+    st.subheader("\U0001F5E3 Notes")
     for _, row in filtered.iterrows():
         st.markdown(f"**{row['Sector']} | {row['Quarter']}** | *{row['Sentiment']}* | {row['Date'].strftime('%b %d, %Y')}")
         st.markdown(f"> {row['Notes']}")
