@@ -53,17 +53,13 @@ st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 
-
-# Ensure no sentiment labels are included in the heatmap
-heatmap_data = heatmap_data.drop(columns=['Sentiment Descriptor'], errors='ignore')  # Remove any lingering sentiment label columns
-
-# Remove sentiment labels from the heatmap and use numeric scores
+# Simplify the heatmap to only represent numerical values without sentiment descriptors
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
+    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Score')
 ).properties(
-    title="Average Sentiment by Sector per Quarter",
+    title="Numerical Sentiment Scores by Sector per Quarter",
     width=600,
     height=400
 )
