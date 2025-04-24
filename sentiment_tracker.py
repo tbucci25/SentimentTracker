@@ -6,11 +6,12 @@ import gspread
 
 # Sheet setup
 SHEET_ID = "1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY"  # Replace with your actual Google Sheet ID
-SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
+SHEET_NAME = "Sheet1"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    gc = gspread.public()  # Using the gspread public access helper from community plugin
+    # Authenticate using a service account
+    gc = gspread.service_account(filename='service_account.json')  # Ensure this file exists in your workspace
     sh = gc.open_by_key(SHEET_ID)
     worksheet = sh.worksheet(SHEET_NAME)
     records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
