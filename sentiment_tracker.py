@@ -5,7 +5,7 @@ import plotly.express as px
 import os
 
 # Sheet setup
-FILE_PATH = os.path.expanduser("~/Desktop/Sentiment Tracker.xlsx")
+FILE_PATH = os.path.expanduser("Desktop/Sentiment Tracker.xlsx")
 SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 
 # Connect and load data from Excel file
