@@ -1,7 +1,7 @@
 # Streamlit dashboard for multi-sector industry sentiment from Excel file with quarterly sentiment view
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import altair as alt
 import os
 
 # Sheet setup
@@ -61,19 +61,22 @@ filtered = data[
 st.subheader("📋 Sentiment Table")
 st.dataframe(filtered.sort_values(by="Date", ascending=False))
 
-# Heatmap view
+# Heatmap view using Altair
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 
-# Ensure the heatmap calculates the average for the z-axis and updates the legend title
-fig = px.density_heatmap(
-    heatmap_data, x='Quarter', y='Sector', z='Score',
-    color_continuous_scale=['red', 'orange', 'white', 'lightgreen', 'green'],
-    range_color=(-2, 2), title="Average Sentiment by Sector per Quarter",
-    labels={"Score": "Average Sentiment"},  # Update legend title
-    histfunc="avg"  # Explicitly calculate the average for the z-axis
+# Create the Altair heatmap
+heatmap = alt.Chart(heatmap_data).mark_rect().encode(
+    x=alt.X('Quarter:O', title='Quarter'),
+    y=alt.Y('Sector:O', title='Sector'),
+    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
+).properties(
+    title="Average Sentiment by Sector per Quarter",
+    width=600,
+    height=400
 )
-st.plotly_chart(fig, use_container_width=True)
+
+st.altair_chart(heatmap, use_container_width=True)
 
 # Optional: Quotes or notes column display
 if 'Notes' in data.columns:
