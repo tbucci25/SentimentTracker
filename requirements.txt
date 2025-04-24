@@ -1,4 +1,5 @@
 streamlit
 pandas
 plotly
-docx2txt
+gspread
+gspread_dataframe
