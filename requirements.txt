@@ -2,8 +2,3 @@ streamlit
 pandas
 plotly
 gspread
-gspread_dataframe
-gspread_public
-oauth2client
-google-auth
-google-auth-oauthlib

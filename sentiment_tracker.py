@@ -12,14 +12,8 @@ SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    # Define the scope for accessing Google Sheets
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-    # Authenticate with gspread using default credentials for public sheets
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scope)
-    gc = gspread.authorize(credentials)
-
     # Access the Google Sheet using its public URL
+    gc = gspread.Client()  # Initialize the gspread client
     sh = gc.open_by_url(SHEET_LINK)
     worksheet = sh.worksheet(SHEET_NAME)
     records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
