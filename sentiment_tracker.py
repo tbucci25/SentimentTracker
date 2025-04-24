@@ -80,6 +80,9 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
 # Ensure there is no null data in the heatmap by filtering out rows with null values
 heatmap_data = heatmap_data.dropna(subset=['Score', 'Sector', 'Quarter'])
 
+# Debugging output to inspect heatmap data for null values
+st.write("Heatmap Data with Null Values:", heatmap_data[heatmap_data['Sentiment Descriptor'].isna()])
+
 # Update the Altair heatmap to use sentiment descriptors for the color encoding
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
