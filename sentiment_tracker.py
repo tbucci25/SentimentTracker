@@ -57,6 +57,9 @@ filtered = data[
     data['Quarter'].isin(quarter_filter)
 ]
 
+# Debugging output to inspect filtered data
+st.write("Filtered Data:", filtered)  # Display the filtered data in Streamlit for debugging
+
 # Table view
 st.subheader("📋 Sentiment Table")
 st.dataframe(filtered.sort_values(by="Date", ascending=False))
