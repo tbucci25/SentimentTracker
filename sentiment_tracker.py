@@ -37,7 +37,7 @@ SENTIMENT_SCORE = {
 
 # Load data
 st.title("📊 Quarterly Sector Sentiment Tracker")
-st.markdown("This dashboard visualizes industry sentiment across sectors, based on expert assessments submitted via Google Sheets.")
+st.markdown("This dashboard visualizes industry sentiment across sectors based on our conversations with indsutry experts.")
 
 try:
     data = load_sheet_data()
@@ -56,9 +56,6 @@ filtered = data[
     data['Sector'].isin(sector_filter) &
     data['Quarter'].isin(quarter_filter)
 ]
-
-# Debugging output to inspect filtered data
-st.write("Filtered Data:", filtered)  # Display the filtered data in Streamlit for debugging
 
 # Table view
 st.subheader("📋 Sentiment Table")
@@ -80,7 +77,7 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
 # Ensure the heatmap uses sentiment descriptors for the z-axis and updates the legend title
 fig = px.density_heatmap(
     heatmap_data, x='Quarter', y='Sector', z='Sentiment Descriptor',
-    color_continuous_scale=['red', 'orange', 'white', 'lightgreen', 'green'],
+    color_continuous_scale=['red', 'light red', 'yellow', 'lightgreen', 'green'],
     title="Average Sentiment by Sector per Quarter",
     labels={"Sentiment Descriptor": "Average Sentiment"}  # Explicitly set legend title
 )
