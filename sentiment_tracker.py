@@ -62,14 +62,17 @@ st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 heatmap_data['Sentiment Label'] = heatmap_data['Score'].map(SENTIMENT_LABELS)
-heatmap_data['Legend Label'] = heatmap_data['Score'].map(lambda x: f"{x}: {SENTIMENT_LABELS.get(x, '')}")
+
+# Custom tick labels for legend
+score_domain = [-2, -1.5, -1, 0, 1, 1.5, 2]
+score_labels = [f"{val}: {SENTIMENT_LABELS[val]}" for val in score_domain]
 
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
     color=alt.Color('Score:Q',
-                   scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'),
-                   legend=alt.Legend(title="Avg Sentiment", labelExpr="datum.label")),
+                   scale=alt.Scale(domain=score_domain, scheme='redyellowgreen'),
+                   legend=alt.Legend(title="Avg Sentiment", values=score_domain, labelExpr=f'datum.value === -2 ? "-2: Bearish" : datum.value === -1.5 ? "-1.5: Inflection to Bearish" : datum.value === -1 ? "-1: Neutral - Cautious Outlook" : datum.value === 0 ? "0: Neutral" : datum.value === 1 ? "1: Neutral - Bullish Outlook" : datum.value === 1.5 ? "1.5: Inflection to Bullish" : datum.value === 2 ? "2: Bullish" : datum.value')),
     tooltip=['Quarter', 'Sector', 'Score', 'Sentiment Label']
 ).properties(
     title="Average Sentiment by Sector per Quarter",
