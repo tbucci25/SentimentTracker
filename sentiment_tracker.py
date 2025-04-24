@@ -3,15 +3,22 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import gspread
+import re  # Added for extracting the sheet ID from the URL
 
 # Sheet setup
 SHEET_LINK = "https://docs.google.com/spreadsheets/d/1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY/edit#gid=0"  # Replace with your actual Google Sheet ID
-SHEET_NAME = "Sheet1"  # Change if your tab has a different name
+SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    # Load data from Google Sheet using its link
-    sh = gspread.open_by_url(SHEET_LINK)
+    # Extract the sheet ID from the URL
+    match = re.search(r'/d/([a-zA-Z0-9-_]+)', SHEET_LINK)
+    if not match:
+        raise ValueError("Invalid Google Sheet URL")
+    sheet_id = match.group(1)
+
+    # Load data from Google Sheet using the extracted sheet ID
+    sh = gspread.open_by_key(sheet_id)
     worksheet = sh.worksheet(SHEET_NAME)
     records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
     df = pd.DataFrame(records)  # Convert to a Pandas DataFrame
