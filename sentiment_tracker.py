@@ -12,6 +12,7 @@ SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 def load_sheet_data():
     # Load data from an Excel file
     df = pd.read_excel(FILE_PATH)
+    return df
   
 # Update the sentiment scoring map to the specified levels
 SENTIMENT_SCORE = {
