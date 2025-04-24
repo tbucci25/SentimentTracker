@@ -66,6 +66,11 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
+
+# Debugging output to identify unmapped Score values
+st.write("Unmapped Scores:", heatmap_data[~heatmap_data['Score'].apply(map_to_nearest_label).isin(SENTIMENT_LABELS.values())])
+
+# Ensure proper rounding and mapping of Score values
 heatmap_data['Sentiment Label'] = heatmap_data['Score'].apply(map_to_nearest_label)
 
 # Update the Altair heatmap to treat `Score` as a categorical variable
