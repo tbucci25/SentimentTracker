@@ -68,13 +68,14 @@ heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_ind
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 heatmap_data['Sentiment Label'] = heatmap_data['Score'].apply(map_to_nearest_label)
 
+# Update the Altair heatmap to treat `Score` as a categorical variable
+heatmap_data['Score'] = heatmap_data['Score'].astype(str)  # Convert scores to strings for categorical encoding
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:Q',
-                   scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'),
-                   legend=alt.Legend(title="Avg Sentiment")),
-    tooltip=['Quarter', 'Sector', 'Score', 'Sentiment Label']
+    color=alt.Color('Score:N', scale=alt.Scale(domain=["-2", "-1.5", "-1", "0", "1", "1.5", "2"], 
+                                               range=['red', 'orange', 'yellow', 'white', 'lightgreen', 'green', 'darkgreen']), 
+                     title='Sentiment Levels')
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
