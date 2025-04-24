@@ -66,7 +66,11 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 
-# Map scores to their descriptors for the heatmap legend
+# Debugging output to inspect unmapped or null scores
+st.write("Unmapped or Null Scores:", heatmap_data[heatmap_data['Score'].isna()])
+
+# Ensure all scores are mapped and exclude null values
+heatmap_data = heatmap_data.dropna(subset=['Score'])
 heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
     -2: "Bearish",
     -1.5: "Inflection to Bearish",
