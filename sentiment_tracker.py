@@ -19,13 +19,13 @@ SENTIMENT_SCORE = {
 }
 
 SENTIMENT_LABELS = {
-    -2: "Bearish",
+    -2.0: "Bearish",
     -1.5: "Inflection to Bearish",
-    -1: "Neutral - Cautious Outlook",
-     0: "Neutral",
-     1: "Neutral - Bullish Outlook",
+    -1.0: "Neutral - Cautious Outlook",
+     0.0: "Neutral",
+     1.0: "Neutral - Bullish Outlook",
      1.5: "Inflection to Bullish",
-     2: "Bullish"
+     2.0: "Bullish"
 }
 
 # Load data function
@@ -39,8 +39,8 @@ def load_sheet_data():
 
 # Helper to map to nearest sentiment label
 def map_to_nearest_label(score):
-    closest_score = min(SENTIMENT_LABELS.keys(), key=lambda x: abs(x - score))
-    return SENTIMENT_LABELS[closest_score]
+    rounded_score = round(score * 2) / 2  # round to nearest 0.5
+    return SENTIMENT_LABELS.get(rounded_score, "Unknown")
 
 # Load data
 st.title("\U0001F4CA Quarterly Sector Sentiment Tracker")
