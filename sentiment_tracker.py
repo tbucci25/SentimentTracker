@@ -80,13 +80,6 @@ line_chart = alt.Chart(trend_data).mark_line(point=True).encode(
 
 st.altair_chart(line_chart, use_container_width=True)
 
-# QoQ sentiment change table
-qoq = trend_data.pivot(index='Sector', columns='Quarter', values='Score')
-qoq_change = qoq.diff(axis=1).iloc[:, 1:]
-
-st.subheader("\U0001F4C9 Quarter-over-Quarter Sentiment Change")
-st.dataframe(qoq_change.style.format("{:+.2f}").background_gradient(cmap="RdYlGn", axis=1))
-
 # Optional: Notes display
 if 'Notes' in data.columns:
     st.subheader("\U0001F5E3 Notes")
