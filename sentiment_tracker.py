@@ -77,6 +77,9 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
      2: "Bullish"
 })
 
+# Exclude rows with null sentiment values from the heatmap data
+heatmap_data = heatmap_data[heatmap_data['Score'].notna()]
+
 # Update the Altair heatmap to use sentiment descriptors for the color encoding
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
