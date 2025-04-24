@@ -37,6 +37,11 @@ def load_sheet_data():
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
     return df
 
+# Helper to map to nearest sentiment label
+def map_to_nearest_label(score):
+    closest_score = min(SENTIMENT_LABELS.keys(), key=lambda x: abs(x - score))
+    return SENTIMENT_LABELS[closest_score]
+
 # Load data
 st.title("\U0001F4CA Quarterly Sector Sentiment Tracker")
 st.markdown("This dashboard visualizes industry sentiment across sectors based on our conversations with industry experts.")
@@ -61,15 +66,14 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
-heatmap_data['Sentiment Label'] = heatmap_data['Score'].map(SENTIMENT_LABELS)
-heatmap_data['Legend Label'] = heatmap_data['Score'].map(lambda x: f"{x}: {SENTIMENT_LABELS.get(x, '')}")
+heatmap_data['Sentiment Label'] = heatmap_data['Score'].apply(map_to_nearest_label)
 
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
     color=alt.Color('Score:Q',
                    scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'),
-                   legend=alt.Legend(title="Avg Sentiment", labelExpr="datum.label")),
+                   legend=alt.Legend(title="Avg Sentiment")),
     tooltip=['Quarter', 'Sector', 'Score', 'Sentiment Label']
 ).properties(
     title="Average Sentiment by Sector per Quarter",
