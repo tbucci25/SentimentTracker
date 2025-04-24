@@ -6,7 +6,7 @@ import gspread
 
 # Sheet setup
 SHEET_ID = "1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY"  # Replace with your actual Google Sheet ID
-SHEET_NAME = "Sheet1"  # Change if your tab has a different name
+SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
