@@ -4,7 +4,8 @@ import pandas as pd
 import plotly.express as px
 
 # Sheet setup
-FILE_PATH = "~/Desktop/Sentiment Tracker.xlsx"
+FILE_PATH = "Desktop/Sentiment Tracker.xlsx"  # Path to the Excel file
+SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 
 # Connect and load data from Excel file
 def load_sheet_data():
