@@ -63,8 +63,8 @@ filtered = data[
     data['Quarter'].isin(quarter_filter)
 ]
 
-# Adjust the dates to be one calendar quarter behind
-filtered['Date'] = filtered['Date'] - pd.offsets.QuarterEnd(1)
+# Adjust the dates in the Excel file to the previous quarter
+data['Date'] = data['Date'] - pd.offsets.QuarterEnd(1)
 
 # Table view
 st.subheader("📋 Sentiment Table")
