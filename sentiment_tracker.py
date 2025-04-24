@@ -23,7 +23,6 @@ def load_sheet_data():
     except Exception as e:
         raise ValueError(f"Error processing the 'Date' column: {e}")
     
-    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
 
 # Update the sentiment scoring map to the specified levels
@@ -63,8 +62,9 @@ filtered = data[
     data['Quarter'].isin(quarter_filter)
 ]
 
-# Adjust the dates in the Excel file to the previous quarter
+# Adjust the dates in the Excel file to the previous quarter before creating the 'Quarter' column
 data['Date'] = data['Date'] - pd.offsets.QuarterEnd(1)
+data['Quarter'] = data['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
 
 # Table view
 st.subheader("📋 Sentiment Table")
