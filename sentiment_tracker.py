@@ -5,19 +5,18 @@ import plotly.express as px
 import gspread
 
 # Sheet setup
-SHEET_ID = "1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY"  # Replace with your actual Google Sheet ID
+SHEET_LINK = "https://docs.google.com/spreadsheets/d/1UAhHj6wG9_Clc7obd4jOekUohK7ifV4NYETSqdqiWSY/edit#gid=0"  # Replace with your actual Google Sheet ID
 SHEET_NAME = "Sheet1"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    # Authenticate using a service account
-    gc = gspread.service_account(filename='service_account.json')  # Ensure this file exists in your workspace
-    sh = gc.open_by_key(SHEET_ID)
+    # Load data from Google Sheet using its link
+    sh = gspread.open_by_url(SHEET_LINK)
     worksheet = sh.worksheet(SHEET_NAME)
     records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
     df = pd.DataFrame(records)  # Convert to a Pandas DataFrame
     df['Date'] = pd.to_datetime(df['Date'])
-    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
+    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
 
 # Sentiment scoring map for visualization
