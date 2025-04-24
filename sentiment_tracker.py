@@ -21,8 +21,8 @@ SENTIMENT_SCORE = {
 # Load data function
 def load_sheet_data():
     df = pd.read_excel(FILE_PATH)
-    # Modify the sentiment score calculation to round to the nearest tenth
-    df['Score'] = df['Sentiment'].map(SENTIMENT_SCORE).round(1)
+    # Revert the sentiment score calculation to use fractional scores without rounding
+    df['Score'] = df['Sentiment'].map(SENTIMENT_SCORE)
     df = df.dropna(subset=['Score', 'Date', 'Sector', 'Sentiment'])
     df['Date'] = df['Date'] - pd.offsets.QuarterEnd(1)
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
