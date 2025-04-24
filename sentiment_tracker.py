@@ -34,12 +34,12 @@ except Exception as e:
     st.error(f"Error loading data: {e}")
     st.stop()
 
+# Apply sentiment scoring
+data['Score'] = data['Sentiment'].map(SENTIMENT_SCORE)
+
 # Adjust the dates in the Excel file to the previous quarter before creating the 'Quarter' column
 data['Date'] = data['Date'] - pd.offsets.QuarterEnd(1)
 data['Quarter'] = data['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
-
-# Apply sentiment scoring
-data['Score'] = data['Sentiment'].map(SENTIMENT_SCORE)
 
 # Filters
 sector_filter = st.multiselect(
