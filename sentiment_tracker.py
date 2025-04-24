@@ -75,11 +75,11 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
 # Ensure there is no null data in the heatmap by filtering out rows with null values
 heatmap_data = heatmap_data.dropna(subset=['Score', 'Sector', 'Quarter'])
 
-# Update the Altair heatmap to use sentiment descriptors for the color encoding
+# Rebuild the Altair heatmap to its original state
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Sentiment Descriptor:N', scale=alt.Scale(scheme='redyellowgreen'), title='Sentiment')
+    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
