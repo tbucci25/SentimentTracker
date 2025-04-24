@@ -74,12 +74,12 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
      2: "Bullish"
 })
 
-# Update the heatmap to use sentiment descriptors for the z-axis
+# Explicitly set the z-axis and legend title to 'Average Sentiment'
 fig = px.density_heatmap(
-    heatmap_data, x='Quarter', y='Sector', z='Sentiment Descriptor',
+    heatmap_data, x='Quarter', y='Sector', z='Score',
     color_continuous_scale=['red', 'orange', 'white', 'lightgreen', 'green'],
-    title="Average Sentiment by Sector per Quarter",
-    labels={"Sentiment Descriptor": "Average Sentiment"}  # Update legend title
+    range_color=(-2, 2), title="Average Sentiment by Sector per Quarter",
+    labels={"Score": "Average Sentiment"}  # Explicitly set legend title
 )
 st.plotly_chart(fig, use_container_width=True)
 
