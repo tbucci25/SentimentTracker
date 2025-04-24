@@ -64,10 +64,22 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 # Heatmap view
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
+
+# Map scores to their descriptors for the heatmap legend
+heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
+    -2: "Bearish",
+    -1: "Inflection to Bearish",
+     0: "Neutral",
+     1: "Inflection to Bullish",
+     2: "Bullish"
+})
+
+# Update the heatmap to use descriptors in the legend
 fig = px.density_heatmap(
     heatmap_data, x='Quarter', y='Sector', z='Score',
     color_continuous_scale=['red', 'orange', 'white', 'lightgreen', 'green'],
-    range_color=(-2, 2), title="Average Sentiment by Sector per Quarter"
+    range_color=(-2, 2), title="Average Sentiment by Sector per Quarter",
+    labels={"Score": "Sentiment Descriptor"}  # Update legend label
 )
 st.plotly_chart(fig, use_container_width=True)
 
