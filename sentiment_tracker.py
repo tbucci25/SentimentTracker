@@ -35,8 +35,8 @@ except Exception as e:
     st.error(f"Error loading data: {e}")
     st.stop()
 
--# Debugging output to inspect the loaded columns
--st.write("Loaded columns:", data.columns)  # Display the columns in the data DataFrame for debugging
+# Debugging output to inspect the loaded columns
+st.write("Loaded columns:", data.columns)  # Display the columns in the data DataFrame for debugging
 
 # Apply sentiment scoring
 data['Score'] = data['Sentiment'].map(SENTIMENT_SCORE)
