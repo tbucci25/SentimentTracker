@@ -26,10 +26,6 @@ def load_sheet_data():
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
     return df
 
-# Update the `map_to_nearest_label` function to handle rounding correctly
-def map_to_nearest_label(score):
-    rounded_score = round(score * 2) / 2  # Round to the nearest 0.5
-    return SENTIMENT_LABELS.get(rounded_score, "Unknown")
 
 # Load data
 st.title("\U0001F4CA Quarterly Sector Sentiment Tracker")
@@ -56,20 +52,12 @@ st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 
-# Debugging output to identify unmapped Score values
-st.write("Unmapped Scores:", heatmap_data[~heatmap_data['Score'].apply(map_to_nearest_label).isin(SENTIMENT_LABELS.values())])
 
-# Ensure proper rounding and mapping of Score values
-heatmap_data['Sentiment Label'] = heatmap_data['Score'].apply(map_to_nearest_label)
-
-# Update the Altair heatmap to treat `Score` as a categorical variable
-heatmap_data['Score'] = heatmap_data['Score'].astype(str)  # Convert scores to strings for categorical encoding
+# Remove sentiment labels from the heatmap and use numeric scores
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:N', scale=alt.Scale(domain=["-2", "-1.5", "-1", "0", "1", "1.5", "2"], 
-                                               range=['red', 'orange', 'yellow', 'white', 'lightgreen', 'green', 'darkgreen']), 
-                     title='Sentiment Levels')
+    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Average Sentiment')
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
