@@ -40,11 +40,8 @@ def load_sheet_data():
 st.title("\U0001F4CA Quarterly Sector Sentiment Tracker")
 st.markdown("This dashboard visualizes industry sentiment across sectors based on our conversations with industry experts.")
 
-try:
-    data = load_sheet_data()
-except Exception as e:
-    st.error(f"Error loading data: {e}")
-    st.stop()
+# Ensure the data variable is defined before using it in filters
+data = load_sheet_data()
 
 # Filters
 sector_filter = st.multiselect("Select sector(s):", sorted(data['Sector'].dropna().unique()), default=sorted(data['Sector'].dropna().unique()))
