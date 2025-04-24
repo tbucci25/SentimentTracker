@@ -77,7 +77,7 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
 # Ensure the heatmap uses sentiment descriptors for the z-axis and updates the legend title
 fig = px.density_heatmap(
     heatmap_data, x='Quarter', y='Sector', z='Sentiment Descriptor',
-    color_continuous_scale=['red', 'light red', 'yellow', 'lightgreen', 'green'],
+    color_continuous_scale='Viridis',  # Replaced custom colorscale with a predefined one
     title="Average Sentiment by Sector per Quarter",
     labels={"Sentiment Descriptor": "Average Sentiment"}  # Explicitly set legend title
 )
