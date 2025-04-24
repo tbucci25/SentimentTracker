@@ -12,19 +12,7 @@ SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 def load_sheet_data():
     # Load data from an Excel file
     df = pd.read_excel(FILE_PATH)
-    # Add error handling for invalid date formats
-    try:
-        # Check if the 'Date' column exists
-        if 'Date' not in df.columns:
-            raise ValueError("The 'Date' column is missing from the Excel file. Please ensure the column exists and is named correctly.")
-        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')  # Convert invalid dates to NaT (Not a Time)
-        if df['Date'].isna().any():
-            raise ValueError("Some dates could not be parsed. Please check the 'Date' column in the Excel file.")
-    except Exception as e:
-        raise ValueError(f"Error processing the 'Date' column: {e}")
-    
-    return df
-
+  
 # Update the sentiment scoring map to the specified levels
 SENTIMENT_SCORE = {
     "Bearish": -2,
