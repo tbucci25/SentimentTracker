@@ -26,6 +26,13 @@ def load_sheet_data():
     df = df.dropna(subset=['Score', 'Date', 'Sector', 'Sentiment'])
     df['Date'] = df['Date'] - pd.offsets.QuarterEnd(1)
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
+    
+    # Adjust the sentiment score calculation to map scores to the nearest label
+    def map_to_nearest_label(score):
+        return min(SENTIMENT_SCORE, key=lambda label: abs(SENTIMENT_SCORE[label] - score))
+
+    df['Sentiment_Label'] = df['Score'].apply(map_to_nearest_label)
+    
     return df
 
 
