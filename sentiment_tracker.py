@@ -18,6 +18,16 @@ SENTIMENT_SCORE = {
     "Bullish": 2
 }
 
+SENTIMENT_LABELS = {
+    -2: "Bearish",
+    -1.5: "Inflection to Bearish",
+    -1: "Neutral - Cautious Outlook",
+     0: "Neutral",
+     1: "Neutral - Bullish Outlook",
+     1.5: "Inflection to Bullish",
+     2: "Bullish"
+}
+
 # Load data function
 def load_sheet_data():
     df = pd.read_excel(FILE_PATH)
@@ -51,12 +61,16 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("\U0001F4C8 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 heatmap_data = heatmap_data.dropna(subset=['Score'])
+heatmap_data['Sentiment Label'] = heatmap_data['Score'].map(SENTIMENT_LABELS)
+heatmap_data['Legend Label'] = heatmap_data['Score'].map(lambda x: f"{x}: {SENTIMENT_LABELS.get(x, '')}")
 
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
     y=alt.Y('Sector:O', title='Sector'),
-    color=alt.Color('Score:Q', scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'), title='Avg Sentiment'),
-    tooltip=['Quarter', 'Sector', 'Score']
+    color=alt.Color('Score:Q',
+                   scale=alt.Scale(domain=[-2, 2], scheme='redyellowgreen'),
+                   legend=alt.Legend(title="Avg Sentiment", labelExpr="datum.label")),
+    tooltip=['Quarter', 'Sector', 'Score', 'Sentiment Label']
 ).properties(
     title="Average Sentiment by Sector per Quarter",
     width=600,
