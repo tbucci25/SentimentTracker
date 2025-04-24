@@ -23,12 +23,17 @@ st.markdown("Filter and explore sentiment by topic, time, and source.")
 
 # Filters
 topic_filter = st.multiselect("Select topic(s):", sentiment_data['Topic'].unique(), default=sentiment_data['Topic'].unique())
-date_range = st.date_input("Select date range:", [sentiment_data['Date'].min(), sentiment_data['Date'].max()])
+#Date Range Conversion
+date_range = st.date_input("Select date range:", [sentiment_data['Date'].min().date(), sentiment_data['Date'].max().date()])
+if isinstance(date_range, tuple) and len(date_range) == 2:
+    start_date, end_date = date_range
+else:
+    start_date = end_date = date_range
 
 # Filtered data
 filtered_data = sentiment_data[
     sentiment_data['Topic'].isin(topic_filter) &
-    sentiment_data['Date'].between(date_range[0], date_range[1])
+    sentiment_data['Date'].dt.date.between(start_date, end_date)
 ]
 
 # Display table
