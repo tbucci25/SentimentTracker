@@ -42,8 +42,8 @@ except Exception as e:
 # Filters
 sector_filter = st.multiselect(
     "Select sector(s):", 
-    ["Consumer", "Financials", "Hardware", "Healthcare", "Ind/Transportation", "Ind/Housing", "Ind/Building Products", "Software", "TMT", "Utilities"], 
-    default=["Consumer", "Financials", "Hardware", "Healthcare", "Ind/Transportation", "Ind/Housing", "Ind/Building Products", "Software", "TMT", "Utilities"]
+    sorted(data['Sector'].dropna().unique()),  # Dynamically fetch unique sectors from the data
+    default=sorted(data['Sector'].dropna().unique())  # Set default to all available sectors
 )
 quarter_filter = st.multiselect("Select quarter(s):", sorted(data['Quarter'].unique()), default=sorted(data['Quarter'].unique()))
 
