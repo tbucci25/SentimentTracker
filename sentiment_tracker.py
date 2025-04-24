@@ -26,12 +26,14 @@ def load_sheet_data():
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
 
-# Sentiment scoring map for visualization
+# Update the sentiment scoring map to the specified levels
 SENTIMENT_SCORE = {
     "Bearish": -2,
-    "Inflection to Bearish": -1,
+    "Inflection to Bearish": -1.5,
+    "Neutral - Cautious Outlook": -1,
     "Neutral": 0,
-    "Inflection to Bullish": 1,
+    "Neutral - Bullish Outlook": 1,
+    "Inflection to Bullish": 1.5,
     "Bullish": 2
 }
 
@@ -49,7 +51,11 @@ except Exception as e:
 data['Score'] = data['Sentiment'].map(SENTIMENT_SCORE)
 
 # Filters
-sector_filter = st.multiselect("Select sector(s):", data['Sector'].unique(), default=data['Sector'].unique())
+sector_filter = st.multiselect(
+    "Select sector(s):", 
+    ["Consumer", "Financials", "Hardware", "Healthcare", "Ind/Transportation", "Ind/Housing", "Ind/Building Products", "Software", "TMT", "Utilities"], 
+    default=["Consumer", "Financials", "Hardware", "Healthcare", "Ind/Transportation", "Ind/Housing", "Ind/Building Products", "Software", "TMT", "Utilities"]
+)
 quarter_filter = st.multiselect("Select quarter(s):", sorted(data['Quarter'].unique()), default=sorted(data['Quarter'].unique()))
 
 filtered = data[
