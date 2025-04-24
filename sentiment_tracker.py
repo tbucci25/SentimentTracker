@@ -12,6 +12,10 @@ SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 def load_sheet_data():
     # Load data from an Excel file
     df = pd.read_excel(FILE_PATH)
+    df['Score'] = df['Sentiment'].map(SENTIMENT_SCORE)
+    df = df.dropna(subset=['Score', 'Date', 'Sector', 'Sentiment'])  # Exclude rows with null values
+    df['Date'] = df['Date'] - pd.offsets.QuarterEnd(1)  # Adjust dates to the previous quarter
+    df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
   
 # Update the sentiment scoring map to the specified levels
@@ -35,16 +39,6 @@ except Exception as e:
     st.error(f"Error loading data: {e}")
     st.stop()
 
-# Debugging output to inspect the loaded columns
-st.write("Loaded columns:", data.columns)  # Display the columns in the data DataFrame for debugging
-
-# Apply sentiment scoring
-data['Score'] = data['Sentiment'].map(SENTIMENT_SCORE)
-
-# Adjust the dates in the Excel file to the previous quarter before creating the 'Quarter' column
-data['Date'] = data['Date'] - pd.offsets.QuarterEnd(1)
-data['Quarter'] = data['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
-
 # Filters
 sector_filter = st.multiselect(
     "Select sector(s):", 
@@ -66,9 +60,6 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 
-# Debugging output to inspect unmapped or null scores
-st.write("Unmapped or Null Scores:", heatmap_data[heatmap_data['Score'].isna()])
-
 # Ensure all scores are mapped and exclude null values
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
@@ -83,9 +74,6 @@ heatmap_data['Sentiment Descriptor'] = heatmap_data['Score'].map({
 
 # Ensure there is no null data in the heatmap by filtering out rows with null values
 heatmap_data = heatmap_data.dropna(subset=['Score', 'Sector', 'Quarter'])
-
-# Debugging output to inspect heatmap data for null values
-st.write("Heatmap Data with Null Values:", heatmap_data[heatmap_data['Sentiment Descriptor'].isna()])
 
 # Update the Altair heatmap to use sentiment descriptors for the color encoding
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
