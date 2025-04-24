@@ -11,14 +11,11 @@ SHEET_NAME = "Sentiment Tracker"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    # Extract the sheet ID from the URL
-    match = re.search(r'/d/([a-zA-Z0-9-_]+)', SHEET_LINK)
-    if not match:
-        raise ValueError("Invalid Google Sheet URL")
-    sheet_id = match.group(1)
+    # Authenticate with gspread using default credentials
+    gc = gspread.Client()  # Initialize the gspread client
 
-    # Load data from Google Sheet using the extracted sheet ID
-    sh = gspread.open_by_key(sheet_id)
+    # Access the Google Sheet using its public URL
+    sh = gc.open_by_url(SHEET_LINK)
     worksheet = sh.worksheet(SHEET_NAME)
     records = worksheet.get_all_records()  # Fetch all records as a list of dictionaries
     df = pd.DataFrame(records)  # Convert to a Pandas DataFrame
