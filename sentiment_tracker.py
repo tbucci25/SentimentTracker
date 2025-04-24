@@ -11,7 +11,7 @@ SHEET_NAME = "Sheet1"  # Change if your tab has a different name
 
 # Connect and load data from Google Sheet
 def load_sheet_data():
-    gc = gspread.Client(auth=None)  # For public sheet access without authentication  # Assumes public sheet access
+    gc = gspread.public()  # Using the gspread public access helper from community plugin  # For public sheet access without authentication  # Assumes public sheet access
     sh = gc.open_by_key(SHEET_ID)
     worksheet = sh.worksheet(SHEET_NAME)
     df = get_as_dataframe(worksheet).dropna(how="all")

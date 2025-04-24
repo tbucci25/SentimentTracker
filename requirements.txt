@@ -3,3 +3,4 @@ pandas
 plotly
 gspread
 gspread_dataframe
+gspread_public
