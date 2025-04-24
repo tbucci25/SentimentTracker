@@ -53,6 +53,9 @@ heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_ind
 heatmap_data = heatmap_data.dropna(subset=['Score'])
 
 
+# Ensure no sentiment labels are included in the heatmap
+heatmap_data = heatmap_data.drop(columns=['Sentiment Descriptor'], errors='ignore')  # Remove any lingering sentiment label columns
+
 # Remove sentiment labels from the heatmap and use numeric scores
 heatmap = alt.Chart(heatmap_data).mark_rect().encode(
     x=alt.X('Quarter:O', title='Quarter'),
