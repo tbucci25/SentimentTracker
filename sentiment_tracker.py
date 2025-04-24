@@ -12,7 +12,14 @@ SHEET_NAME = "Sentiment Tracker"  # Name of the sheet in the Excel file
 def load_sheet_data():
     # Load data from an Excel file
     df = pd.read_excel(FILE_PATH)
-    df['Date'] = pd.to_datetime(df['Date'])
+    # Add error handling for invalid date formats
+    try:
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')  # Convert invalid dates to NaT (Not a Time)
+        if df['Date'].isna().any():
+            raise ValueError("Some dates could not be parsed. Please check the 'Date' column in the Excel file.")
+    except Exception as e:
+        raise ValueError(f"Error processing the 'Date' column: {e}")
+    
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)  # Group dates into calendar quarters
     return df
 
