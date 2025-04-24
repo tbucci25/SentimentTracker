@@ -65,12 +65,13 @@ st.dataframe(filtered.sort_values(by="Date", ascending=False))
 st.subheader("📈 Sentiment Score by Quarter & Sector")
 heatmap_data = filtered.groupby(['Quarter', 'Sector'])['Score'].mean().reset_index()
 
-# Revert the heatmap to use the original colors and functionality
+# Ensure the heatmap calculates the average for the z-axis and updates the legend title
 fig = px.density_heatmap(
     heatmap_data, x='Quarter', y='Sector', z='Score',
     color_continuous_scale=['red', 'orange', 'white', 'lightgreen', 'green'],
     range_color=(-2, 2), title="Average Sentiment by Sector per Quarter",
-    labels={"Score": "Average Sentiment"}  # Revert legend title
+    labels={"Score": "Average Sentiment"},  # Update legend title
+    histfunc="avg"  # Explicitly calculate the average for the z-axis
 )
 st.plotly_chart(fig, use_container_width=True)
 
