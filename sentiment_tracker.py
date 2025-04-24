@@ -37,9 +37,9 @@ def load_sheet_data():
     df['Quarter'] = df['Date'].dt.to_period('Q').astype(str)
     return df
 
-# Helper to map to nearest sentiment label
+# Update the `map_to_nearest_label` function to handle rounding correctly
 def map_to_nearest_label(score):
-    rounded_score = round(score * 2) / 2  # round to nearest 0.5
+    rounded_score = round(score * 2) / 2  # Round to the nearest 0.5
     return SENTIMENT_LABELS.get(rounded_score, "Unknown")
 
 # Load data
